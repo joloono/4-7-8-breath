@@ -21,41 +21,55 @@
         }
 
         .circle {
-            width: 20px;
-            height: 20px;
+            position: relative;
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
             animation: sizeAndColor 19s infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .countdown {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #333;
+            opacity: 0.1;
+            transition: opacity 0.5s ease;
         }
 
         .text {
             position: absolute;
-            top: 50%;
+            top: calc(100% + 20px); /* unterhalb des Kreises platzieren */
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translateX(-50%);
             font-size: 1.5rem;
             font-weight: bold;
             color: #333;
+            opacity: 1;
+            transition: opacity 0.5s ease;
         }
 
         @keyframes sizeAndColor {
-            /* Gesamtzyklus: 19s */
-            /* Einatmen: 0% bis 21% (~0s bis ~4s) */
-            /* Halten: 22% bis 57% (~4s bis ~11s) */
-            /* Ausatmen: 58% bis 100% (~11s bis 19s) */
+            /* Zeitablauf total: 19s 
+               Einatmen: 0s - 4s (0% - 21%)
+               Halten: 4s - 11s (22% - 57%)
+               Ausatmen: 11s - 19s (58% - 100%) */
             0% {
                 transform: scale(0.2);
                 background-color: #FF8C00;
             }
             21% {
-                transform: scale(7); 
+                transform: scale(7);
                 background-color: #32CD32;
             }
             57% {
-                transform: scale(8); 
+                transform: scale(8);
                 background-color: #FFD700;
             }
             100% {
-                transform: scale(0.2); 
+                transform: scale(0.2);
                 background-color: #FF8C00;
             }
         }
@@ -63,34 +77,77 @@
 </head>
 <body>
     <div class="container">
-        <div class="circle"></div>
+        <div class="circle">
+            <div class="countdown" id="countdownText">4</div>
+        </div>
         <div class="text" id="displayText">Einatmen...</div>
     </div>
+
     <script>
+        // Zeitabschnitte des Zyklus (in ms)
+        const totalDuration = 19000; 
+        const inhaleTime = 4000;   // 4s
+        const holdTime = 7000;     // 7s
+        const exhaleTime = 8000;   // 8s
+
+        // Elemente
         const textElement = document.getElementById('displayText');
-        const totalDuration = 19000; // 19s in ms
+        const countdownElement = document.getElementById('countdownText');
+
+        // Countdown-Arrays
+        const inhaleCountdown = [4, 3, 2, 1];
+        const holdCountdown = [7, 6, 5, 4, 3, 2, 1];
+        const exhaleCountdown = [8, 7, 6, 5, 4, 3, 2, 1];
+
+        function fadeText(element, newText) {
+            // Text mit Fade austauschen
+            element.style.opacity = '0';
+            setTimeout(() => {
+                element.textContent = newText;
+                element.style.opacity = '1';
+            }, 500);
+        }
+
+        function runCountdown(sequence, phaseDuration) {
+            // sequence: Array mit den Sekunden
+            // phaseDuration: Dauer der Phase in ms
+            // Alle 1000ms einen Wert ausgeben
+            let index = 0;
+            fadeText(countdownElement, sequence[index]);
+
+            const interval = setInterval(() => {
+                index++;
+                if (index < sequence.length) {
+                    fadeText(countdownElement, sequence[index]);
+                } else {
+                    clearInterval(interval);
+                }
+            }, 1000);
+        }
 
         function startCycle() {
-            // Zu Beginn des Zyklus Text auf "Einatmen..." setzen
-            textElement.textContent = "Einatmen...";
+            // Phase 1: Einatmen
+            fadeText(textElement, "Einatmen...");
+            runCountdown(inhaleCountdown, inhaleTime);
 
-            // Nach 4s auf "Halten..." wechseln (4000ms)
             setTimeout(() => {
-                textElement.textContent = "Halten...";
-            }, 4000);
+                // Phase 2: Halten
+                fadeText(textElement, "Halten...");
+                runCountdown(holdCountdown, holdTime);
+            }, inhaleTime);
 
-            // Nach 11s auf "Ausatmen..." wechseln (11000ms)
             setTimeout(() => {
-                textElement.textContent = "Ausatmen...";
-            }, 11000);
+                // Phase 3: Ausatmen
+                fadeText(textElement, "Ausatmen...");
+                runCountdown(exhaleCountdown, exhaleTime);
+            }, inhaleTime + holdTime);
 
-            // Nach 19s wieder von vorn starten
             setTimeout(() => {
+                // Nach 19s den Zyklus erneut starten
                 startCycle();
             }, totalDuration);
         }
 
-        // Starte den Zyklus beim Laden der Seite
         startCycle();
     </script>
 </body>
