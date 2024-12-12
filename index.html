@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4-7-8 Atemübung</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #f0f8ff;
+            font-family: Arial, sans-serif;
+        }
+
+        .breath {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            color: #333;
+            animation: breath-cycle 19s infinite;
+        }
+
+        @keyframes breath-cycle {
+            0%, 21% {
+                content: "Einatmen...";
+                opacity: 1;
+            }
+            22%, 57% {
+                content: "Halten...";
+                opacity: 1;
+            }
+            58%, 100% {
+                content: "Ausatmen...";
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="breath">
+        Einatmen...
+    </div>
+</body>
+</html>
