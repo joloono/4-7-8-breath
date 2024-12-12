@@ -15,33 +15,83 @@
             font-family: Arial, sans-serif;
         }
 
-        .breath {
-            font-size: 2rem;
-            font-weight: bold;
+        .container {
+            position: relative;
             text-align: center;
-            color: #333;
-            animation: breath-cycle 19s infinite;
         }
 
-        @keyframes breath-cycle {
-            0%, 21% {
-                content: "Einatmen...";
-                opacity: 1;
+        .circle {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            animation: sizeAndColor 19s infinite;
+        }
+
+        .text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        @keyframes sizeAndColor {
+            /* Gesamtzyklus: 19s */
+            /* Einatmen: 0% bis 21% (~0s bis ~4s) */
+            /* Halten: 22% bis 57% (~4s bis ~11s) */
+            /* Ausatmen: 58% bis 100% (~11s bis 19s) */
+            0% {
+                transform: scale(0.2);
+                background-color: #FF8C00;
             }
-            22%, 57% {
-                content: "Halten...";
-                opacity: 1;
+            21% {
+                transform: scale(7); 
+                background-color: #32CD32;
             }
-            58%, 100% {
-                content: "Ausatmen...";
-                opacity: 1;
+            57% {
+                transform: scale(8); 
+                background-color: #FFD700;
+            }
+            100% {
+                transform: scale(0.2); 
+                background-color: #FF8C00;
             }
         }
     </style>
 </head>
 <body>
-    <div class="breath">
-        Einatmen...
+    <div class="container">
+        <div class="circle"></div>
+        <div class="text" id="displayText">Einatmen...</div>
     </div>
+    <script>
+        const textElement = document.getElementById('displayText');
+        const totalDuration = 19000; // 19s in ms
+
+        function startCycle() {
+            // Zu Beginn des Zyklus Text auf "Einatmen..." setzen
+            textElement.textContent = "Einatmen...";
+
+            // Nach 4s auf "Halten..." wechseln (4000ms)
+            setTimeout(() => {
+                textElement.textContent = "Halten...";
+            }, 4000);
+
+            // Nach 11s auf "Ausatmen..." wechseln (11000ms)
+            setTimeout(() => {
+                textElement.textContent = "Ausatmen...";
+            }, 11000);
+
+            // Nach 19s wieder von vorn starten
+            setTimeout(() => {
+                startCycle();
+            }, totalDuration);
+        }
+
+        // Starte den Zyklus beim Laden der Seite
+        startCycle();
+    </script>
 </body>
 </html>
