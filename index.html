@@ -28,10 +28,10 @@
             align-items: center;
         }
 
-        /* Der Kreis wird relativ groß gehalten und skaliert nun nur minimal.
-           Einatmen: bis ca. 21% -> skaliert von 0.8 auf 1.0
-           Halten: 22% - 57% -> minimal von 1.0 auf 1.05
-           Ausatmen: 58% - 100% -> wieder von 1.05 auf 0.8 runter */
+        /* Der Kreis ist nun anfangs kleiner (scale(0.7)) 
+           und wächst bis Einatmen-Ende auf scale(1.0).
+           Beim Halten erreicht er scale(1.1),
+           beim Ausatmen geht er zurück auf scale(0.7). */
         .circle {
             position: relative;
             width: 80vmin;
@@ -39,12 +39,9 @@
             border-radius: 50%;
             transform-origin: center;
             animation: sizeAndColor 19s infinite;
-            background-color: #FF8C00; /* Ausgangsfarbe */
+            background-color: #FF8C00; 
         }
 
-        /* Countdown und Text liegen über dem Kreis, 
-           sind aber unabhängig von dessen Transform-Skala,
-           so bleibt der Text immer stabil im Zentrum. */
         .overlay {
             position: absolute;
             top: 50%;
@@ -53,6 +50,7 @@
             text-align: center;
         }
 
+        /* Countdown kleiner und in der Mitte, unverändert */
         .countdown {
             font-size: 5vmin; 
             font-weight: bold;
@@ -62,6 +60,7 @@
             margin-bottom: 20px;
         }
 
+        /* Anweisungstext */
         .text {
             font-size: 3vmin;
             font-weight: bold;
@@ -71,26 +70,26 @@
         }
 
         @keyframes sizeAndColor {
-            /* Neu definierte Keyframes:
-               Start: scale(0.8) - klein aber nicht winzig
-               Einatmen bis 21%: scale auf 1.0
-               Halten bis 57%: leichtes Wachsen auf 1.05
-               Ausatmen bis 100%: zurück auf 0.8
+            /* Neuer Skalierungsverlauf:
+               0%: scale(0.7) - klein
+               21%: scale(1.0) - deutlich größer beim Ende des Einatmens
+               57%: scale(1.1) - beim Halten noch etwas größer
+               100%: scale(0.7) - zurück auf klein beim Ausatmen-Ende
             */
             0% {
-                transform: scale(0.8);
-                background-color: #FF8C00; 
+                transform: scale(0.7);
+                background-color: #FF8C00;
             }
             21% {
                 transform: scale(1.0);
-                background-color: #32CD32; 
+                background-color: #32CD32;
             }
             57% {
-                transform: scale(1.05);
+                transform: scale(1.1);
                 background-color: #FFD700;
             }
             100% {
-                transform: scale(0.8);
+                transform: scale(0.7);
                 background-color: #FF8C00;
             }
         }
@@ -106,7 +105,6 @@
     </div>
 
     <script>
-        // Zeitabschnitte des 4-7-8 Zyklus
         const totalDuration = 19000; 
         const inhaleTime = 4000;   // Einatmen: 4s
         const holdTime = 7000;     // Halten: 7s
