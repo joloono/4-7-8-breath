@@ -10,7 +10,7 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden; /* Kein Scrollen */
+            overflow: hidden;
         }
 
         body {
@@ -23,12 +23,15 @@
 
         .container {
             position: relative;
-            /* Zentrierung ist bereits über body geregelt */
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
+        /* Der Kreis wird relativ groß gehalten und skaliert nun nur minimal.
+           Einatmen: bis ca. 21% -> skaliert von 0.8 auf 1.0
+           Halten: 22% - 57% -> minimal von 1.0 auf 1.05
+           Ausatmen: 58% - 100% -> wieder von 1.05 auf 0.8 runter */
         .circle {
             position: relative;
             width: 80vmin;
@@ -36,9 +39,18 @@
             border-radius: 50%;
             transform-origin: center;
             animation: sizeAndColor 19s infinite;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background-color: #FF8C00; /* Ausgangsfarbe */
+        }
+
+        /* Countdown und Text liegen über dem Kreis, 
+           sind aber unabhängig von dessen Transform-Skala,
+           so bleibt der Text immer stabil im Zentrum. */
+        .overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
         }
 
         .countdown {
@@ -47,10 +59,10 @@
             color: #333;
             opacity: 0.5;
             transition: opacity 0.5s ease;
+            margin-bottom: 20px;
         }
 
         .text {
-            margin-top: 20px; /* etwas Abstand unterhalb des Kreises */
             font-size: 3vmin;
             font-weight: bold;
             color: #333;
@@ -59,24 +71,26 @@
         }
 
         @keyframes sizeAndColor {
-            /* Gesamt: 19s
-               Einatmen: 0-4s (0%-21%) => Skaliert von klein (0.2) auf groß (1)
-               Halten: 4-11s (22%-57%) => Bleibt auf groß (1)
-               Ausatmen: 11-19s (58%-100%) => Zurück auf klein (0.2) */
+            /* Neu definierte Keyframes:
+               Start: scale(0.8) - klein aber nicht winzig
+               Einatmen bis 21%: scale auf 1.0
+               Halten bis 57%: leichtes Wachsen auf 1.05
+               Ausatmen bis 100%: zurück auf 0.8
+            */
             0% {
-                transform: scale(0.2);
-                background-color: #FF8C00;
+                transform: scale(0.8);
+                background-color: #FF8C00; 
             }
             21% {
-                transform: scale(1);
-                background-color: #32CD32;
+                transform: scale(1.0);
+                background-color: #32CD32; 
             }
             57% {
-                transform: scale(1);
+                transform: scale(1.05);
                 background-color: #FFD700;
             }
             100% {
-                transform: scale(0.2);
+                transform: scale(0.8);
                 background-color: #FF8C00;
             }
         }
@@ -84,24 +98,23 @@
 </head>
 <body>
     <div class="container">
-        <div class="circle">
+        <div class="circle"></div>
+        <div class="overlay">
             <div class="countdown" id="countdownText">4</div>
+            <div class="text" id="displayText">Einatmen...</div>
         </div>
-        <div class="text" id="displayText">Einatmen...</div>
     </div>
 
     <script>
-        // Zeitabschnitte des Zyklus (in ms)
+        // Zeitabschnitte des 4-7-8 Zyklus
         const totalDuration = 19000; 
         const inhaleTime = 4000;   // Einatmen: 4s
         const holdTime = 7000;     // Halten: 7s
         const exhaleTime = 8000;   // Ausatmen: 8s
 
-        // Elemente
         const textElement = document.getElementById('displayText');
         const countdownElement = document.getElementById('countdownText');
 
-        // Countdown-Arrays
         const inhaleCountdown = [4, 3, 2, 1];
         const holdCountdown = [7, 6, 5, 4, 3, 2, 1];
         const exhaleCountdown = [8, 7, 6, 5, 4, 3, 2, 1];
@@ -117,7 +130,6 @@
         function runCountdown(sequence) {
             let index = 0;
             fadeText(countdownElement, sequence[index]);
-
             const interval = setInterval(() => {
                 index++;
                 if (index < sequence.length) {
@@ -129,24 +141,24 @@
         }
 
         function startCycle() {
-            // Phase 1: Einatmen
+            // Einatmen
             fadeText(textElement, "Einatmen...");
             runCountdown(inhaleCountdown);
 
             setTimeout(() => {
-                // Phase 2: Halten
+                // Halten
                 fadeText(textElement, "Halten...");
                 runCountdown(holdCountdown);
             }, inhaleTime);
 
             setTimeout(() => {
-                // Phase 3: Ausatmen
+                // Ausatmen
                 fadeText(textElement, "Ausatmen...");
                 runCountdown(exhaleCountdown);
             }, inhaleTime + holdTime);
 
             setTimeout(() => {
-                // Zyklus neu starten
+                // Neuer Zyklus
                 startCycle();
             }, totalDuration);
         }
@@ -154,5 +166,4 @@
         startCycle();
     </script>
 </body>
-</html>
 </html>
